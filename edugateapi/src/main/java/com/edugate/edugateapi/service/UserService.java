@@ -1,0 +1,116 @@
+package com.edugate.edugateapi.service;
+
+import com.edugate.edugateapi.dto.UserProfileDto;
+import com.edugate.edugateapi.dto.course.CourseResponse;
+import com.edugate.edugateapi.model.*;
+import com.edugate.edugateapi.repository.CourseRepository;
+import com.edugate.edugateapi.repository.UserRepository;
+import com.edugate.edugateapi.repository.UserSubscriptionRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+
+    private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
+    private final UserSubscriptionRepository subscriptionRepository;
+
+    // Helper to get the base URL (e.g., http://localhost:8080)
+    private String getBaseUrl() {
+        return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+    }
+
+    /**
+     * Fetches all *APPROVED* courses for users to browse.
+     */
+    public List<CourseResponse> getAllLiveCourses() {
+        return courseRepository.findByStatus(CourseStatus.APPROVED).stream()
+                .map(course -> CourseResponse.fromEntity(course, getBaseUrl()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Subscribes a user to a specific course.
+     */
+    @Transactional
+    public void subscribeToCourse(Long courseId, User user) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        if (!course.getStatus().equals(CourseStatus.APPROVED)) {
+            throw new RuntimeException("Cannot subscribe to a non-approved course.");
+        }
+
+        // Create the composite key
+        UserSubscriptionId id = new UserSubscriptionId(user.getId(), courseId);
+
+        // Check if already subscribed
+        if (subscriptionRepository.existsById(id)) {
+            throw new RuntimeException("User is already subscribed to this course.");
+        }
+
+        // Create the new subscription link
+        UserSubscription subscription = UserSubscription.builder()
+                .id(id)
+                .user(user)
+                .course(course)
+                .build();
+        
+        subscriptionRepository.save(subscription);
+    }
+
+    /**
+     * Unsubscribes a user from a specific course.
+     */
+    @Transactional
+    public void unsubscribeFromCourse(Long courseId, User user) {
+        // Create the composite key
+        UserSubscriptionId id = new UserSubscriptionId(user.getId(), courseId);
+
+        // Check if the subscription exists
+        if (!subscriptionRepository.existsById(id)) {
+            throw new RuntimeException("Subscription not found.");
+        }
+
+        subscriptionRepository.deleteById(id);
+    }
+
+    /**
+     * Fetches all courses a user is currently subscribed to.
+     */
+    public List<CourseResponse> getMySubscriptions(User user) {
+        // Use the new custom query from CourseRepository
+        return courseRepository.findCoursesBySubscriberId(user.getId()).stream()
+                .map(course -> CourseResponse.fromEntity(course, getBaseUrl()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Updates a user's own profile information.
+     */
+    @Transactional
+    public UserProfileDto updateMyProfile(User user, UserProfileDto profileDto) {
+        // We find the user again from the repository to ensure we have the latest data
+        User userToUpdate = userRepository.findById(user.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        userToUpdate.setFullName(profileDto.getFullName());
+        userToUpdate.setPhoneNumber(profileDto.getPhoneNumber());
+
+        User savedUser = userRepository.save(userToUpdate);
+
+        // Return the updated DTO
+        UserProfileDto updatedDto = new UserProfileDto();
+        updatedDto.setFullName(savedUser.getFullName());
+        updatedDto.setPhoneNumber(savedUser.getPhoneNumber());
+        return updatedDto;
+    }
+}
