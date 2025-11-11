@@ -3,6 +3,7 @@ package com.edugate.edugateapi.service;
 import com.edugate.edugateapi.dto.AdminLogDto;
 import com.edugate.edugateapi.dto.PendingCourseDto;
 import com.edugate.edugateapi.dto.UserDto;
+import com.edugate.edugateapi.exception.ResourceNotFoundException; // <-- CHANGED
 import com.edugate.edugateapi.model.Course;
 import com.edugate.edugateapi.model.CourseStatus;
 import com.edugate.edugateapi.model.Role;
@@ -14,7 +15,7 @@ import com.edugate.edugateapi.repository.UserSubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+// import org.springframework.security.core.userdetails.UsernameNotFoundException; // <-- REMOVED
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,24 +79,7 @@ public class AdminService {
                 .map(PendingCourseDto::fromEntity)
                 .collect(Collectors.toList());
     }
-
-    // @Transactional
-    // public void approveCourse(Long courseId, User admin) {
-    //     Course course = findCourseById(courseId);
-    //     String details;
-
-    //     if (course.getStatus().equals(CourseStatus.PENDING_ADDITION)) {
-    //         course.setStatus(CourseStatus.APPROVED);
-    //         details = "Approved and published new course: " + course.getCourseName();
-    //         adminLogService.logAction(admin, "APPROVED_COURSE", courseId, "COURSE", details);
-    //         courseRepository.save(course);
-    //     } else if (course.getStatus().equals(CourseStatus.PENDING_REMOVAL)) {
-    //         details = "Approved removal of course: " + course.getCourseName();
-    //         // We log *before* deleting so we have a record
-    //         adminLogService.logAction(admin, "APPROVED_REMOVAL", courseId, "COURSE", details);
-    //         courseRepository.delete(course);
-    //     }
-    // }
+    
     @Transactional
     public void approveCourse(Long courseId, User admin) {
         Course course = findCourseById(courseId);
@@ -152,12 +136,13 @@ public class AdminService {
 
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+                // v-- CHANGED --v
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
     }
 
     private Course findCourseById(Long courseId) {
-        // We'll create this custom exception later
         return courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+                 // v-- CHANGED --v
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
     }
 }

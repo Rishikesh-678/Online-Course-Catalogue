@@ -2,12 +2,13 @@ package com.edugate.edugateapi.service;
 
 import com.edugate.edugateapi.dto.UserProfileDto;
 import com.edugate.edugateapi.dto.course.CourseResponse;
+import com.edugate.edugateapi.exception.ResourceNotFoundException; // <-- CHANGED
 import com.edugate.edugateapi.model.*;
 import com.edugate.edugateapi.repository.CourseRepository;
 import com.edugate.edugateapi.repository.UserRepository;
 import com.edugate.edugateapi.repository.UserSubscriptionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+// import org.springframework.security.core.userdetails.UsernameNotFoundException; // <-- REMOVED
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -43,9 +44,11 @@ public class UserService {
     @Transactional
     public void subscribeToCourse(Long courseId, User user) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                 // v-- CHANGED --v
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
 
         if (!course.getStatus().equals(CourseStatus.APPROVED)) {
+            // TODO: Consider creating a BadRequestException (400) for this
             throw new RuntimeException("Cannot subscribe to a non-approved course.");
         }
 
@@ -54,6 +57,7 @@ public class UserService {
 
         // Check if already subscribed
         if (subscriptionRepository.existsById(id)) {
+            // TODO: Consider creating a ConflictException (409) for this
             throw new RuntimeException("User is already subscribed to this course.");
         }
 
@@ -77,7 +81,8 @@ public class UserService {
 
         // Check if the subscription exists
         if (!subscriptionRepository.existsById(id)) {
-            throw new RuntimeException("Subscription not found.");
+             // v-- CHANGED --v
+            throw new ResourceNotFoundException("Subscription not found for user " + user.getId() + " and course " + courseId);
         }
 
         subscriptionRepository.deleteById(id);
@@ -100,7 +105,8 @@ public class UserService {
     public UserProfileDto updateMyProfile(User user, UserProfileDto profileDto) {
         // We find the user again from the repository to ensure we have the latest data
         User userToUpdate = userRepository.findById(user.getId())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                 // v-- CHANGED --v
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + user.getId()));
 
         userToUpdate.setFullName(profileDto.getFullName());
         userToUpdate.setPhoneNumber(profileDto.getPhoneNumber());
