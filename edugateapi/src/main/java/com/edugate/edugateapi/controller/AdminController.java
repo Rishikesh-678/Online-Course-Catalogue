@@ -7,7 +7,9 @@ import com.edugate.edugateapi.model.User;
 import com.edugate.edugateapi.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -74,12 +76,24 @@ public class AdminController {
 
     // --- Admin Log Endpoint (for Admin Profile Page) ---
 
+    // @GetMapping("/logs/me")
+    // public ResponseEntity<Page<AdminLogDto>> getMyAdminLog(
+    //         @AuthenticationPrincipal User admin,
+    //         @PageableDefault(size = 10, sort = "createdAt,desc") Pageable pageable
+    // ) {
     @GetMapping("/logs/me")
     public ResponseEntity<Page<AdminLogDto>> getMyAdminLog(
-            @AuthenticationPrincipal User admin,
-            @PageableDefault(size = 10, sort = "createdAt,desc") Pageable pageable
+           @AuthenticationPrincipal User admin,
+           Pageable pageable
     ) {
-        // The @AuthenticationPrincipal annotation magically gets the logged-in user
-        return ResponseEntity.ok(adminService.getAdminLog(admin, pageable));
-    }
+    // Force a safe sort (ignores Swagger’s ?sort=string)
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable safePageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                sort
+      );
+
+    return ResponseEntity.ok(adminService.getAdminLog(admin, safePageable));
+}
 }

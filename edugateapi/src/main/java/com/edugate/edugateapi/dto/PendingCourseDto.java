@@ -2,13 +2,17 @@ package com.edugate.edugateapi.dto;
 
 import com.edugate.edugateapi.model.Course;
 import com.edugate.edugateapi.model.CourseStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PendingCourseDto {
     private Long id;
     private String courseName;

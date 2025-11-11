@@ -143,10 +143,10 @@ public class AdminService {
     // --- Admin Log ---
 
     public Page<AdminLogDto> getAdminLog(User admin, Pageable pageable) {
-        // Fetches a paginated list of logs for the *currently logged-in* admin
-        return adminLogRepository.findByAdminId(admin.getId(), pageable)
+        return adminLogRepository.findByAdmin_Id(admin.getId(), pageable)
                 .map(AdminLogDto::fromEntity);
-    }
+  }
+
 
     // --- Helper Methods ---
 

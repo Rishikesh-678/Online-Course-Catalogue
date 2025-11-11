@@ -55,6 +55,18 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
+    // User.java (The corrected code)
+
+    // @Override
+    // public Collection<? extends GrantedAuthority> getAuthorities() {
+    // // This fix adds the required "ROLE_" prefix
+    //     return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    // }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
 
     @Override
     public String getUsername() {
