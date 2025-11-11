@@ -56,7 +56,7 @@ Before you begin, ensure you have the following installed:
    \# Update username and password to match your setup  
    spring.datasource.url=jdbc:postgresql://localhost:5432/edugate\_db  
    spring.datasource.username=postgres  
-   spring.datasource.password=Nandu2002
+   spring.datasource.password=
 
    \# File Upload Configuration  
    \# IMPORTANT: Create this directory on your system or change the path.  
@@ -65,7 +65,7 @@ Before you begin, ensure you have the following installed:
 
    \# JWT Secret Key  
    \# IMPORTANT: Replace this with your own strong, 32-byte (64-char hex) secret key  
-   jwt.secret-key=565b3ad98073e4386cbadcb3bb94aa12ddd4aacfc2101b0c0e1cdc64e537e0a1
+   jwt.secret-key=
 
    * **Note on file.upload-dir**: Make sure the directory you specify (e.g., ./uploads/thumbnails) exists, or the application will fail on file upload.  
 4. **Run the application:**  
