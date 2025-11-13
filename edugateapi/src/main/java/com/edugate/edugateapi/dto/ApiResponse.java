@@ -1,6 +1,7 @@
 
 package com.edugate.edugateapi.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class ApiResponse<T> {
     private int status;
 
     @Schema(description = "Timestamp of response", example = "2025-11-12T14:55:27.830Z")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     @Builder.Default
     private Instant timestamp = Instant.now();
 

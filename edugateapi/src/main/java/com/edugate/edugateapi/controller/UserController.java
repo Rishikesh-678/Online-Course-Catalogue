@@ -37,7 +37,7 @@ public class UserController {
     @GetMapping("/courses")
     @Operation(summary = "Get live courses", description = "Retrieve all courses that are currently live/published")
     @ApiResponse(responseCode = "200", description = "List of live courses", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses\",\"message\":\"Live courses retrieved\",\"data\":[{\"id\":1,\"title\":\"Intro to Java\",\"summary\":\"Basics of Java programming\"}]}")))
-    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT required")
+    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":401,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses\",\"message\":\"Unauthorized - Valid JWT required\",\"data\":null}")))
     public ResponseEntity<List<CourseResponse>> getAllLiveCourses() {
         return ResponseEntity.ok(userService.getAllLiveCourses());
     }
@@ -48,7 +48,7 @@ public class UserController {
     @GetMapping("/courses/my-subscriptions")
     @Operation(summary = "Get my subscriptions", description = "Retrieve the list of courses the current user is subscribed to")
     @ApiResponse(responseCode = "200", description = "List of subscriptions", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/my-subscriptions\",\"message\":\"Subscriptions retrieved\",\"data\":[{\"id\":2,\"title\":\"Spring Boot Basics\",\"summary\":\"Build REST APIs with Spring Boot\"}]}")))
-    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT required")
+    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":401,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/my-subscriptions\",\"message\":\"Unauthorized - Valid JWT required\",\"data\":null}")))
     public ResponseEntity<List<CourseResponse>> getMySubscriptions(
             @AuthenticationPrincipal User user
     ) {
@@ -62,7 +62,7 @@ public class UserController {
     @Operation(summary = "Subscribe to a course", description = "Subscribe the authenticated user to a course by ID")
     @ApiResponse(responseCode = "200", description = "Successfully subscribed to course", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/subscribe/1\",\"message\":\"Successfully subscribed to course\",\"data\":null}")))
     @ApiResponse(responseCode = "400", description = "Bad request - course not approved", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":400,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/subscribe/1\",\"message\":\"Cannot subscribe to a non-approved course.\",\"data\":null}")))
-    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT required")
+    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":401,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/subscribe/1\",\"message\":\"Unauthorized - Valid JWT required\",\"data\":null}")))
     @ApiResponse(responseCode = "404", description = "Course not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/subscribe/1\",\"message\":\"Course not found\",\"data\":null}")))
     @ApiResponse(responseCode = "409", description = "Conflict - Already subscribed to this course", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":409,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/subscribe/1\",\"message\":\"Conflict - Already subscribed to this course\",\"data\":null}")))
     public ResponseEntity<Void> subscribeToCourse(
@@ -79,7 +79,7 @@ public class UserController {
     @DeleteMapping("/courses/unsubscribe/{courseId}")
     @Operation(summary = "Unsubscribe from a course", description = "Remove the authenticated user's subscription to the course")
     @ApiResponse(responseCode = "204", description = "Successfully unsubscribed from course", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":204,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/unsubscribe/1\",\"message\":\"Successfully unsubscribed from course\",\"data\":null}")))
-    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT required")
+    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":401,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/unsubscribe/1\",\"message\":\"Unauthorized - Valid JWT required\",\"data\":null}")))
     @ApiResponse(responseCode = "404", description = "Subscription not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/unsubscribe/1\",\"message\":\"Subscription not found\",\"data\":null}")))
     public ResponseEntity<Void> unsubscribeFromCourse(
             @PathVariable Long courseId,

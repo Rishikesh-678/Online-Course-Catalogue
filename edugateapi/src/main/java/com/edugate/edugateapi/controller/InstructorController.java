@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,9 +63,9 @@ public class InstructorController {
      */
     @DeleteMapping("/courses/{courseId}")
     @Operation(summary = "Request course removal", description = "Request removal of a course submitted by the authenticated instructor")
-    @ApiResponse(responseCode = "204", description = "Course removal requested successfully", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class)))
-    @ApiResponse(responseCode = "404", description = "Course not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/instructor/courses/{courseId}\",\"message\":\"Course not found\",\"data\":null}")))
-    @ApiResponse(responseCode = "403", description = "Forbidden - You can only remove your own courses", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":403,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/instructor/courses/{courseId}\",\"message\":\"Forbidden - You can only remove your own courses\",\"data\":null}")))
+    @ApiResponse(responseCode = "204", description = "Course removal requested successfully", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":204,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/instructor/courses/10\",\"message\":\"Course removal requested successfully\",\"data\":null}")))
+    @ApiResponse(responseCode = "404", description = "Course not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/instructor/courses/999\",\"message\":\"Course not found\",\"data\":null}")))
+    @ApiResponse(responseCode = "403", description = "Forbidden - You can only remove your own courses", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":403,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/instructor/courses/10\",\"message\":\"Forbidden - You can only remove your own courses\",\"data\":null}")))
     public ResponseEntity<Void> requestCourseRemoval(
             @PathVariable Long courseId,
             @AuthenticationPrincipal User instructorUser
@@ -80,7 +79,7 @@ public class InstructorController {
      */
     @GetMapping("/courses/my-courses")
     @Operation(summary = "Get instructor's courses", description = "Retrieve all courses submitted by the authenticated instructor, regardless of approval status")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved instructor's courses", content = @Content(array = @ArraySchema(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class))))
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved instructor's courses", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/instructor/courses/my-courses\",\"message\":\"My courses\",\"data\":[{\"id\":10,\"courseName\":\"Advanced Spring\",\"instructor\":\"Dr. John\",\"category\":\"Backend\",\"videoLink\":\"https://youtube.com/watch?v=xyz\",\"status\":\"APPROVED\"}]}")))
     @ApiResponse(responseCode = "403", description = "Forbidden - Instructor role required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":403,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/instructor/courses/my-courses\",\"message\":\"Forbidden - Instructor role required\",\"data\":null}")))
     public ResponseEntity<List<CourseResponse>> getMyCourses(
             @AuthenticationPrincipal User instructorUser

@@ -88,6 +88,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -97,6 +98,9 @@ public class SecurityConfig {
 
             // ✅ Enable CORS using our bean below
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+            // ✅ Set custom entry point for 401 (instead of 403)
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
             // Define endpoint permissions
             .authorizeHttpRequests(auth -> auth

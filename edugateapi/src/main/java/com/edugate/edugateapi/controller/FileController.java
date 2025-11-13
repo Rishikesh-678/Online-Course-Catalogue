@@ -31,10 +31,10 @@ public class FileController {
     }
 
     @GetMapping("/{filename:.+}")
-    @Operation(summary = "Retrieve image file", description = "Serves image files (thumbnails, course images, etc.) from the upload directory")
-    @ApiResponse(responseCode = "200", description = "File retrieved successfully", content = @Content(mediaType = "image/*"))
-    @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/images/{filename}\",\"message\":\"File not found\",\"data\":null}")))
-    @ApiResponse(responseCode = "400", description = "Invalid file path or malformed URL", content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":400,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/images/{filename}\",\"message\":\"Invalid file path or malformed URL\",\"data\":null}")))
+    @Operation(summary = "Retrieve image file", description = "Serves image files (thumbnails, course images, etc.) from the upload directory. Returns raw binary image data on success (not wrapped in ApiResponse).")
+    @ApiResponse(responseCode = "200", description = "File retrieved successfully - raw binary image data (PNG, JPEG, AVIF, etc.)", content = @Content(mediaType = "image/*"))
+    @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/images/nonexistent.png\",\"message\":\"File not found\",\"data\":null}")))
+    @ApiResponse(responseCode = "400", description = "Invalid file path or malformed URL", content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":400,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/images/../../etc/passwd\",\"message\":\"Invalid file path or malformed URL\",\"data\":null}")))
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
         try {
             Path file = rootLocation.resolve(filename);
