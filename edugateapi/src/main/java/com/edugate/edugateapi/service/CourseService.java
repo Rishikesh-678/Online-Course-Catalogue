@@ -1,6 +1,8 @@
 package com.edugate.edugateapi.service;
 
 import com.edugate.edugateapi.dto.course.CourseResponse;
+import com.edugate.edugateapi.exception.BadRequestException;
+import com.edugate.edugateapi.exception.ResourceNotFoundException;
 import com.edugate.edugateapi.model.Course;
 import com.edugate.edugateapi.model.CourseStatus;
 import com.edugate.edugateapi.model.User;
@@ -70,7 +72,7 @@ public class CourseService {
             // If it was never approved, just delete it immediately
             courseRepository.delete(course);
         } else {
-            throw new RuntimeException("This course is already pending removal or cannot be removed.");
+            throw new BadRequestException("This course is already pending removal or cannot be removed.");
         }
     }
 
@@ -88,7 +90,7 @@ public class CourseService {
 
     private Course findCourseById(Long courseId) {
         return courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
     }
 
     private void checkOwnership(Course course, User instructor) {

@@ -47,6 +47,9 @@
 package com.edugate.edugateapi.controller;
 
 import com.edugate.edugateapi.dto.ApiResponse; // <-- Import new class
+import com.edugate.edugateapi.exception.BadRequestException;
+import com.edugate.edugateapi.exception.ConflictException;
+import com.edugate.edugateapi.exception.ResourceNotFoundException; // <-- Import ResourceNotFoundException
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -123,6 +126,36 @@ public class GlobalExceptionHandler {
                                 HttpStatus.FORBIDDEN,
                                 getPath(request));
                 return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        }
+
+        @ExceptionHandler(ResourceNotFoundException.class)
+        public ResponseEntity<ApiResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException ex,
+                        WebRequest request) {
+                ApiResponse<Object> response = ApiResponse.error(
+                                ex.getMessage(),
+                                HttpStatus.NOT_FOUND,
+                                getPath(request));
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        @ExceptionHandler(ConflictException.class)
+        public ResponseEntity<ApiResponse<Object>> handleConflictException(ConflictException ex,
+                        WebRequest request) {
+                ApiResponse<Object> response = ApiResponse.error(
+                                ex.getMessage(),
+                                HttpStatus.CONFLICT,
+                                getPath(request));
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+
+        @ExceptionHandler(BadRequestException.class)
+        public ResponseEntity<ApiResponse<Object>> handleBadRequestException(BadRequestException ex,
+                        WebRequest request) {
+                ApiResponse<Object> response = ApiResponse.error(
+                                ex.getMessage(),
+                                HttpStatus.BAD_REQUEST,
+                                getPath(request));
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
         @ExceptionHandler(Exception.class)

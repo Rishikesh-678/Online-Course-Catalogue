@@ -2,6 +2,8 @@ package com.edugate.edugateapi.service;
 
 import com.edugate.edugateapi.dto.UserProfileDto;
 import com.edugate.edugateapi.dto.course.CourseResponse;
+import com.edugate.edugateapi.exception.BadRequestException;
+import com.edugate.edugateapi.exception.ConflictException;
 import com.edugate.edugateapi.exception.ResourceNotFoundException; // <-- CHANGED
 import com.edugate.edugateapi.model.*;
 import com.edugate.edugateapi.repository.CourseRepository;
@@ -48,8 +50,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
 
         if (!course.getStatus().equals(CourseStatus.APPROVED)) {
-            // TODO: Consider creating a BadRequestException (400) for this
-            throw new RuntimeException("Cannot subscribe to a non-approved course.");
+            throw new BadRequestException("Cannot subscribe to a non-approved course.");
         }
 
         // Create the composite key
@@ -57,8 +58,7 @@ public class UserService {
 
         // Check if already subscribed
         if (subscriptionRepository.existsById(id)) {
-            // TODO: Consider creating a ConflictException (409) for this
-            throw new RuntimeException("User is already subscribed to this course.");
+            throw new ConflictException("User is already subscribed to this course.");
         }
 
         // Create the new subscription link

@@ -4,18 +4,37 @@ import com.edugate.edugateapi.model.Course;
 import com.edugate.edugateapi.model.CourseStatus;
 import lombok.Builder;
 import lombok.Data;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Data
 @Builder
+@Schema(description = "Course representation returned by the API")
 public class CourseResponse {
+    @Schema(description = "Course id", example = "10")
     private Long id;
+
+    @Schema(description = "Human-readable course title", example = "Spring Boot Fundamentals")
     private String courseName;
+
+    @Schema(description = "Instructor name", example = "Dr. Jane Smith")
     private String instructor;
+
+    @Schema(description = "Course category", example = "Backend Development")
     private String category;
+
+    @Schema(description = "URL to the course video (e.g., YouTube)", example = "https://youtube.com/watch?v=abc123")
     private String videoLink;
+
+    @Schema(description = "Public URL to the thumbnail image", example = "http://localhost:8080/api/images/3d2fd838-...avif")
     private String thumbnailUrl; // We will build the full URL
+
+    @Schema(description = "Current course status", example = "LIVE")
     private CourseStatus status;
+
+    @Schema(description = "ID of the user who created the course", example = "2")
     private Long createdById;
+
+    @Schema(description = "Email of the course creator", example = "instructor@example.com")
     private String creatorEmail;
 
     /**
