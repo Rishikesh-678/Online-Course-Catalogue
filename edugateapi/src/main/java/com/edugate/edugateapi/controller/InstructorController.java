@@ -63,15 +63,20 @@ public class InstructorController {
      */
     @DeleteMapping("/courses/{courseId}")
     @Operation(summary = "Request course removal", description = "Request removal of a course submitted by the authenticated instructor")
-    @ApiResponse(responseCode = "204", description = "Course removal requested successfully", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":204,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/instructor/courses/10\",\"message\":\"Course removal requested successfully\",\"data\":null}")))
+    @ApiResponse(responseCode = "200", description = "Course removal requested successfully", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/instructor/courses/10\",\"message\":\"Course removal requested successfully\",\"data\":null}")))
     @ApiResponse(responseCode = "404", description = "Course not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/instructor/courses/999\",\"message\":\"Course not found\",\"data\":null}")))
     @ApiResponse(responseCode = "403", description = "Forbidden - You can only remove your own courses", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":403,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/instructor/courses/10\",\"message\":\"Forbidden - You can only remove your own courses\",\"data\":null}")))
-    public ResponseEntity<Void> requestCourseRemoval(
+    public ResponseEntity<com.edugate.edugateapi.dto.ApiResponse<Void>> requestCourseRemoval(
             @PathVariable Long courseId,
             @AuthenticationPrincipal User instructorUser
     ) {
         courseService.requestCourseRemoval(courseId, instructorUser);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(com.edugate.edugateapi.dto.ApiResponse.success(
+            null,
+            "Course removal requested successfully",
+            "/api/instructor/courses/" + courseId,
+            org.springframework.http.HttpStatus.OK
+        ));
     }
 
     /**

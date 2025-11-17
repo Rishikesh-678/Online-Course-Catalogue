@@ -1,5 +1,6 @@
 package com.edugate.edugateapi.service;
 
+import com.edugate.edugateapi.dto.SubscriptionDto;
 import com.edugate.edugateapi.dto.UserProfileDto;
 import com.edugate.edugateapi.dto.course.CourseResponse;
 import com.edugate.edugateapi.exception.BadRequestException;
@@ -41,10 +42,10 @@ public class UserService {
     }
 
     /**
-     * Subscribes a user to a specific course.
+     * Subscribes a user to a specific course and returns subscription details.
      */
     @Transactional
-    public void subscribeToCourse(Long courseId, User user) {
+    public SubscriptionDto subscribeToCourse(Long courseId, User user) {
         Course course = courseRepository.findById(courseId)
                  // v-- CHANGED --v
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
@@ -68,7 +69,17 @@ public class UserService {
                 .course(course)
                 .build();
         
-        subscriptionRepository.save(subscription);
+        UserSubscription savedSubscription = subscriptionRepository.save(subscription);
+        
+        // Return subscription details
+        return new SubscriptionDto(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                course.getId(),
+                course.getCourseName(),
+                savedSubscription.getSubscribedAt()
+        );
     }
 
     /**

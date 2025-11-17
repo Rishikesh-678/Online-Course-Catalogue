@@ -60,17 +60,22 @@ public class UserController {
      */
     @PostMapping("/courses/subscribe/{courseId}")
     @Operation(summary = "Subscribe to a course", description = "Subscribe the authenticated user to a course by ID")
-    @ApiResponse(responseCode = "200", description = "Successfully subscribed to course", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/subscribe/1\",\"message\":\"Successfully subscribed to course\",\"data\":null}")))
+    @ApiResponse(responseCode = "200", description = "Successfully subscribed to course", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/subscribe/1\",\"message\":\"Successfully subscribed to course\",\"data\":{\"userId\":10,\"userFullName\":\"John Doe\",\"userEmail\":\"john@example.com\",\"courseId\":5,\"courseName\":\"Java 101\",\"subscribedAt\":\"2025-11-12T16:00:00Z\"}}")))
     @ApiResponse(responseCode = "400", description = "Bad request - course not approved", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":400,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/subscribe/1\",\"message\":\"Cannot subscribe to a non-approved course.\",\"data\":null}")))
     @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":401,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/subscribe/1\",\"message\":\"Unauthorized - Valid JWT required\",\"data\":null}")))
     @ApiResponse(responseCode = "404", description = "Course not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/subscribe/1\",\"message\":\"Course not found\",\"data\":null}")))
     @ApiResponse(responseCode = "409", description = "Conflict - Already subscribed to this course", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":409,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/subscribe/1\",\"message\":\"Conflict - Already subscribed to this course\",\"data\":null}")))
-    public ResponseEntity<Void> subscribeToCourse(
+    public ResponseEntity<com.edugate.edugateapi.dto.ApiResponse<com.edugate.edugateapi.dto.SubscriptionDto>> subscribeToCourse(
             @PathVariable Long courseId,
             @AuthenticationPrincipal User user
     ) {
-        userService.subscribeToCourse(courseId, user);
-        return ResponseEntity.ok().build();
+        com.edugate.edugateapi.dto.SubscriptionDto subscription = userService.subscribeToCourse(courseId, user);
+        return ResponseEntity.ok(com.edugate.edugateapi.dto.ApiResponse.success(
+            subscription,
+            "Successfully subscribed to course",
+            "/api/user/courses/subscribe/" + courseId,
+            org.springframework.http.HttpStatus.OK
+        ));
     }
 
     /**
@@ -81,12 +86,17 @@ public class UserController {
     @ApiResponse(responseCode = "204", description = "Successfully unsubscribed from course", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":204,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/unsubscribe/1\",\"message\":\"Successfully unsubscribed from course\",\"data\":null}")))
     @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":401,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/unsubscribe/1\",\"message\":\"Unauthorized - Valid JWT required\",\"data\":null}")))
     @ApiResponse(responseCode = "404", description = "Subscription not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/courses/unsubscribe/1\",\"message\":\"Subscription not found\",\"data\":null}")))
-    public ResponseEntity<Void> unsubscribeFromCourse(
+    public ResponseEntity<com.edugate.edugateapi.dto.ApiResponse<Void>> unsubscribeFromCourse(
             @PathVariable Long courseId,
             @AuthenticationPrincipal User user
     ) {
         userService.unsubscribeFromCourse(courseId, user);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(com.edugate.edugateapi.dto.ApiResponse.success(
+            null,
+            "Successfully unsubscribed from course",
+            "/api/user/courses/unsubscribe/" + courseId,
+            org.springframework.http.HttpStatus.OK
+        ));
     }
 
     // --- Profile Management ---

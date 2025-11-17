@@ -98,12 +98,17 @@ public class AdminController {
     @ApiResponse(responseCode = "200", description = "Course approved successfully", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/courses/approve/5\",\"message\":\"Course approved successfully\",\"data\":null}")))
     @ApiResponse(responseCode = "404", description = "Course not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/courses/approve/999\",\"message\":\"Course not found\",\"data\":null}")))
     @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":403,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/courses/approve/5\",\"message\":\"Forbidden - Admin role required\",\"data\":null}")))
-    public ResponseEntity<Void> approveCourse(
+    public ResponseEntity<com.edugate.edugateapi.dto.ApiResponse<Void>> approveCourse(
             @PathVariable Long courseId,
             @AuthenticationPrincipal User admin
     ) {
         adminService.approveCourse(courseId, admin);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(com.edugate.edugateapi.dto.ApiResponse.success(
+            null,
+            "Course approved successfully",
+            "/api/admin/courses/approve/" + courseId,
+            org.springframework.http.HttpStatus.OK
+        ));
     }
 
     @PostMapping("/courses/reject/{courseId}")
@@ -111,12 +116,17 @@ public class AdminController {
     @ApiResponse(responseCode = "200", description = "Course rejected successfully", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/courses/reject/5\",\"message\":\"Course rejected successfully\",\"data\":null}")))
     @ApiResponse(responseCode = "404", description = "Course not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/courses/reject/999\",\"message\":\"Course not found\",\"data\":null}")))
     @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":403,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/courses/reject/5\",\"message\":\"Forbidden - Admin role required\",\"data\":null}")))
-    public ResponseEntity<Void> rejectCourse(
+    public ResponseEntity<com.edugate.edugateapi.dto.ApiResponse<Void>> rejectCourse(
             @PathVariable Long courseId,
             @AuthenticationPrincipal User admin
     ) {
         adminService.rejectCourse(courseId, admin);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(com.edugate.edugateapi.dto.ApiResponse.success(
+            null,
+            "Course rejected successfully",
+            "/api/admin/courses/reject/" + courseId,
+            org.springframework.http.HttpStatus.OK
+        ));
     }
 
     // --- Admin Log Endpoint (for Admin Profile Page) ---
