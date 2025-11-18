@@ -92,4 +92,27 @@ public class InstructorController {
         List<CourseResponse> courses = courseService.getMyCourses(instructorUser);
         return ResponseEntity.ok(courses);
     }
+
+    /**
+     * Endpoint for an instructor to update their own course.
+     */
+    @PutMapping(value = "/courses/{courseId}", consumes = "multipart/form-data")
+    @Operation(summary = "Update a course", description = "Updates a course created by the authenticated instructor; accepts multipart/form-data with optional thumbnail image")
+    @ApiResponse(responseCode = "200", description = "Course updated successfully", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class)))
+    @ApiResponse(responseCode = "404", description = "Course not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class)))
+    @ApiResponse(responseCode = "403", description = "Forbidden - You can only update your own courses", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class)))
+    public ResponseEntity<CourseResponse> updateCourse(
+            @PathVariable Long courseId,
+            @RequestParam(required = false) String courseName,
+            @RequestParam(required = false) String instructor,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String videoLink,
+            @RequestParam(required = false) MultipartFile thumbnail,
+            @AuthenticationPrincipal User instructorUser
+    ) {
+        CourseResponse updatedCourse = courseService.updateCourse(
+                courseId, courseName, instructor, category, videoLink, thumbnail, instructorUser
+        );
+        return ResponseEntity.ok(updatedCourse);
+    }
 }

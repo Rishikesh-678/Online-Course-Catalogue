@@ -49,6 +49,9 @@ public class SecurityConfig {
                 // Whitelist our public authentication endpoints
                 .requestMatchers("/api/auth/**").permitAll()
 
+                // ✅ Whitelist public course browsing endpoints (no auth required)
+                .requestMatchers("/api/public/courses/**").permitAll()
+
                 // Whitelist file serving endpoints
                 .requestMatchers("/api/images/**").permitAll()
 

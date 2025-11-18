@@ -86,6 +86,41 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Allows an instructor to update their own course.
+     */
+    @Transactional
+    public CourseResponse updateCourse(Long courseId, String courseName, String instructorName, 
+                                       String category, String videoLink, MultipartFile thumbnailFile, 
+                                       User instructor) {
+        Course course = findCourseById(courseId);
+        checkOwnership(course, instructor); // Verify this instructor owns this course
+
+        // Update fields if provided (non-null)
+        if (courseName != null && !courseName.isBlank()) {
+            course.setCourseName(courseName);
+        }
+        if (instructorName != null && !instructorName.isBlank()) {
+            course.setInstructor(instructorName);
+        }
+        if (category != null && !category.isBlank()) {
+            course.setCategory(category);
+        }
+        if (videoLink != null && !videoLink.isBlank()) {
+            course.setVideoLink(videoLink);
+        }
+
+        // Update thumbnail if a new one is provided
+        if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+            String newThumbnailFilename = fileStorageService.store(thumbnailFile);
+            course.setThumbnail(newThumbnailFilename);
+        }
+
+        // Save updated course
+        Course updatedCourse = courseRepository.save(course);
+        return CourseResponse.fromEntity(updatedCourse, getBaseUrl());
+    }
+
     // --- Helper Methods ---
 
     private Course findCourseById(Long courseId) {
