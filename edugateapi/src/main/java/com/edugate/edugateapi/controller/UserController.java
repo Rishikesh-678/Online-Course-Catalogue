@@ -150,6 +150,7 @@
 package com.edugate.edugateapi.controller;
 
 import com.edugate.edugateapi.dto.UserProfileDto;
+import com.edugate.edugateapi.dto.auth.ChangePasswordRequest;
 import com.edugate.edugateapi.dto.course.CourseResponse;
 import com.edugate.edugateapi.model.User;
 import com.edugate.edugateapi.service.UserService;
@@ -297,5 +298,28 @@ public class UserController {
     ) {
         UserProfileDto updatedProfile = userService.updateMyProfile(user, profileDto);
         return ResponseEntity.ok(updatedProfile);
+    }
+
+    /**
+     * Changes the logged-in user's password.
+     */
+    @PostMapping("/profile/change-password")
+    @Operation(summary = "Change password", description = "Changes the password of the authenticated user")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Password changed successfully",
+        content = @Content(
+            schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class),
+            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/profile/change-password\",\"message\":\"Password changed successfully\",\"data\":null}")
+        )
+    )
+    @ApiResponse(responseCode = "400", description = "Bad request - invalid current password or validation failed", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":400,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/profile/change-password\",\"message\":\"Current password is incorrect\",\"data\":null}")))
+    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":401,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/user/profile/change-password\",\"message\":\"Unauthorized - Valid JWT required\",\"data\":null}")))
+    public ResponseEntity<Void> changePassword(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody ChangePasswordRequest request
+    ) {
+        userService.changePassword(user, request);
+        return ResponseEntity.ok().build();
     }
 }

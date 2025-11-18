@@ -134,6 +134,7 @@
 package com.edugate.edugateapi.service;
 
 import com.edugate.edugateapi.dto.UserProfileDto;
+import com.edugate.edugateapi.dto.auth.ChangePasswordRequest;
 import com.edugate.edugateapi.dto.course.CourseResponse;
 import com.edugate.edugateapi.exception.BadRequestException;
 import com.edugate.edugateapi.exception.ConflictException;
@@ -144,6 +145,7 @@ import com.edugate.edugateapi.repository.UserRepository;
 import com.edugate.edugateapi.repository.UserSubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 // import org.springframework.security.core.userdetails.UsernameNotFoundException; // <-- REMOVED
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -158,6 +160,7 @@ public class UserService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final UserSubscriptionRepository subscriptionRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // Helper to get the base URL (e.g., http://localhost:8080)
     private String getBaseUrl() {
@@ -266,5 +269,28 @@ public class UserService {
         updatedDto.setFullName(savedUser.getFullName());
         updatedDto.setPhoneNumber(savedUser.getPhoneNumber());
         return updatedDto;
+    }
+
+    /**
+     * Changes a user's password.
+     */
+    @Transactional
+    public void changePassword(User user, ChangePasswordRequest request) {
+        User userToUpdate = userRepository.findById(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + user.getId()));
+
+        // Verify the current password
+        if (!passwordEncoder.matches(request.getCurrentPassword(), userToUpdate.getPassword())) {
+            throw new BadRequestException("Current password is incorrect");
+        }
+
+        // Check that new password is different from current password
+        if (passwordEncoder.matches(request.getNewPassword(), userToUpdate.getPassword())) {
+            throw new BadRequestException("New password must be different from the current password");
+        }
+
+        // Encode and set the new password
+        userToUpdate.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(userToUpdate);
     }
 }
