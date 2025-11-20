@@ -94,6 +94,22 @@ public class InstructorController {
     }
 
     /**
+     * Endpoint for an instructor to get a specific course they created.
+     */
+    @GetMapping("/courses/{courseId}")
+    @Operation(summary = "Get a specific course", description = "Retrieve details of a specific course created by the authenticated instructor")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved course details", content = @Content(schema = @Schema(implementation = CourseResponse.class)))
+    @ApiResponse(responseCode = "404", description = "Course not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class)))
+    @ApiResponse(responseCode = "403", description = "Forbidden - You can only view your own courses", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class)))
+    public ResponseEntity<CourseResponse> getMyCourse(
+            @PathVariable Long courseId,
+            @AuthenticationPrincipal User instructorUser
+    ) {
+        CourseResponse course = courseService.getMyCourse(courseId, instructorUser);
+        return ResponseEntity.ok(course);
+    }
+
+    /**
      * Endpoint for an instructor to update their own course.
      */
     @PutMapping(value = "/courses/{courseId}", consumes = "multipart/form-data")

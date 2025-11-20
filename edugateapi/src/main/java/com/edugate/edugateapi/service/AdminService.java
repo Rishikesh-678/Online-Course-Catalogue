@@ -15,6 +15,8 @@ import com.edugate.edugateapi.repository.UserSubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.edugate.edugateapi.dto.course.CourseResponse; // Ensure this is imported
+import com.edugate.edugateapi.exception.BadRequestException;
 // import org.springframework.security.core.userdetails.UsernameNotFoundException; // <-- REMOVED
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -155,5 +157,33 @@ public class AdminService {
 
     private String getBaseUrl() {
         return System.getProperty("app.base-url", "http://localhost:8080");
+    }
+
+    public List<CourseResponse> getAllManagedCourses() {
+        // We want to see both Approved (Live) and Hidden courses
+        List<CourseStatus> statuses = List.of(CourseStatus.APPROVED, CourseStatus.HIDDEN);
+        return courseRepository.findByStatusIn(statuses).stream()
+                .map(course -> CourseResponse.fromEntity(course, getBaseUrl()))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public CourseResponse toggleCourseVisibility(Long courseId, User admin) {
+        Course course = findCourseById(courseId);
+        
+        if (course.getStatus().equals(CourseStatus.APPROVED)) {
+            course.setStatus(CourseStatus.HIDDEN);
+            adminLogService.logAction(admin, "HID_COURSE", courseId, "COURSE", 
+                "Hid course from public view: " + course.getCourseName());
+        } else if (course.getStatus().equals(CourseStatus.HIDDEN)) {
+            course.setStatus(CourseStatus.APPROVED);
+            adminLogService.logAction(admin, "UNHID_COURSE", courseId, "COURSE", 
+                "Unhid course: " + course.getCourseName());
+        } else {
+            throw new BadRequestException("Can only toggle visibility for APPROVED or HIDDEN courses.");
+        }
+        
+        Course savedCourse = courseRepository.save(course);
+        return CourseResponse.fromEntity(savedCourse, getBaseUrl());
     }
 }

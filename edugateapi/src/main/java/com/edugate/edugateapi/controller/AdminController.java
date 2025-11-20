@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import com.edugate.edugateapi.dto.course.CourseResponse;
 
 import java.util.List;
 
@@ -45,41 +46,25 @@ public class AdminController {
 
     @PutMapping("/users/promote/{userId}")
     @Operation(summary = "Promote user to instructor", description = "Promote a user to instructor role")
-    @ApiResponse(
-        responseCode = "200",
-        description = "User promoted successfully",
-        content = @Content(
-            schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class),
-            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/users/promote/1\",\"message\":\"User promoted successfully\",\"data\":{\"id\":1,\"fullName\":\"John Doe\",\"email\":\"john@example.com\",\"phoneNumber\":\"+1-234-567-8900\",\"role\":\"ROLE_INSTRUCTOR\"}}")
-        )
-    )
+    @ApiResponse(responseCode = "200", description = "User promoted successfully", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/users/promote/1\",\"message\":\"User promoted successfully\",\"data\":{\"id\":1,\"fullName\":\"John Doe\",\"email\":\"john@example.com\",\"phoneNumber\":\"+1-234-567-8900\",\"role\":\"ROLE_INSTRUCTOR\"}}")))
     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":401,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/users/promote/1\",\"message\":\"Unauthorized\",\"data\":null}")))
     @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/users/promote/1\",\"message\":\"User not found\",\"data\":null}")))
     @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":403,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/users/promote/1\",\"message\":\"Forbidden - Admin role required\",\"data\":null}")))
     public ResponseEntity<UserDto> promoteUser(
             @PathVariable Long userId,
-            @AuthenticationPrincipal User admin
-    ) {
+            @AuthenticationPrincipal User admin) {
         return ResponseEntity.ok(adminService.promoteUser(userId, admin));
     }
 
     @PutMapping("/users/demote/{userId}")
     @Operation(summary = "Demote instructor to user", description = "Demote an instructor back to a regular user role")
-    @ApiResponse(
-        responseCode = "200",
-        description = "User demoted successfully",
-        content = @Content(
-            schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class),
-            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/users/demote/1\",\"message\":\"User demoted successfully\",\"data\":{\"id\":1,\"fullName\":\"John Doe\",\"email\":\"john@example.com\",\"phoneNumber\":\"+1-234-567-8900\",\"role\":\"ROLE_USER\"}}")
-        )
-    )
+    @ApiResponse(responseCode = "200", description = "User demoted successfully", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/users/demote/1\",\"message\":\"User demoted successfully\",\"data\":{\"id\":1,\"fullName\":\"John Doe\",\"email\":\"john@example.com\",\"phoneNumber\":\"+1-234-567-8900\",\"role\":\"ROLE_USER\"}}")))
     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":401,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/users/demote/1\",\"message\":\"Unauthorized\",\"data\":null}")))
     @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":404,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/users/demote/1\",\"message\":\"User not found\",\"data\":null}")))
     @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":403,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/users/demote/1\",\"message\":\"Forbidden - Admin role required\",\"data\":null}")))
     public ResponseEntity<UserDto> demoteUser(
             @PathVariable Long userId,
-            @AuthenticationPrincipal User admin
-    ) {
+            @AuthenticationPrincipal User admin) {
         return ResponseEntity.ok(adminService.demoteUser(userId, admin));
     }
 
@@ -109,15 +94,13 @@ public class AdminController {
     @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":403,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/courses/approve/5\",\"message\":\"Forbidden - Admin role required\",\"data\":null}")))
     public ResponseEntity<com.edugate.edugateapi.dto.ApiResponse<Void>> approveCourse(
             @PathVariable Long courseId,
-            @AuthenticationPrincipal User admin
-    ) {
+            @AuthenticationPrincipal User admin) {
         adminService.approveCourse(courseId, admin);
         return ResponseEntity.ok(com.edugate.edugateapi.dto.ApiResponse.success(
-            null,
-            "Course approved successfully",
-            "/api/admin/courses/approve/" + courseId,
-            org.springframework.http.HttpStatus.OK
-        ));
+                null,
+                "Course approved successfully",
+                "/api/admin/courses/approve/" + courseId,
+                org.springframework.http.HttpStatus.OK));
     }
 
     @PostMapping("/courses/reject/{courseId}")
@@ -127,40 +110,51 @@ public class AdminController {
     @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":403,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/courses/reject/5\",\"message\":\"Forbidden - Admin role required\",\"data\":null}")))
     public ResponseEntity<com.edugate.edugateapi.dto.ApiResponse<Void>> rejectCourse(
             @PathVariable Long courseId,
-            @AuthenticationPrincipal User admin
-    ) {
+            @AuthenticationPrincipal User admin) {
         adminService.rejectCourse(courseId, admin);
         return ResponseEntity.ok(com.edugate.edugateapi.dto.ApiResponse.success(
-            null,
-            "Course rejected successfully",
-            "/api/admin/courses/reject/" + courseId,
-            org.springframework.http.HttpStatus.OK
-        ));
+                null,
+                "Course rejected successfully",
+                "/api/admin/courses/reject/" + courseId,
+                org.springframework.http.HttpStatus.OK));
     }
 
     // --- Admin Log Endpoint (for Admin Profile Page) ---
 
     // @GetMapping("/logs/me")
     // public ResponseEntity<Page<AdminLogDto>> getMyAdminLog(
-    //         @AuthenticationPrincipal User admin,
-    //         @PageableDefault(size = 10, sort = "createdAt,desc") Pageable pageable
+    // @AuthenticationPrincipal User admin,
+    // @PageableDefault(size = 10, sort = "createdAt,desc") Pageable pageable
     // ) {
     @GetMapping("/logs/me")
     @Operation(summary = "Get admin activity log", description = "Retrieve paged admin activity logs for the authenticated admin")
     @ApiResponse(responseCode = "200", description = "Paged admin logs", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/logs/me\",\"message\":\"Admin logs\",\"data\":{\"pageable\":{\"pageSize\":10,\"pageNumber\":0},\"content\":[{\"id\":1,\"action\":\"APPROVED_COURSE\",\"target\":\"Course 5\",\"createdAt\":\"2025-11-12T12:00:00Z\"}]}}")))
     @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":false,\"status\":403,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/logs/me\",\"message\":\"Forbidden - Admin role required\",\"data\":null}")))
     public ResponseEntity<Page<AdminLogDto>> getMyAdminLog(
-        @AuthenticationPrincipal User admin,
-        Pageable pageable
-    ) {
-    // Force a safe sort (ignores Swagger’s ?sort=string)
+            @AuthenticationPrincipal User admin,
+            Pageable pageable) {
+        // Force a safe sort (ignores Swagger’s ?sort=string)
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         Pageable safePageable = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
-                sort
-      );
+                sort);
 
-    return ResponseEntity.ok(adminService.getAdminLog(admin, safePageable));
-}
+        return ResponseEntity.ok(adminService.getAdminLog(admin, safePageable));
+    }
+
+    @GetMapping("/courses/managed")
+    @Operation(summary = "Get managed courses", description = "Retrieve all Approved and Hidden courses for management")
+    @ApiResponse(responseCode = "200", description = "List of managed courses")
+    public ResponseEntity<List<CourseResponse>> getManagedCourses() {
+        return ResponseEntity.ok(adminService.getAllManagedCourses());
+    }
+
+    @PutMapping("/courses/{courseId}/toggle-visibility")
+    @Operation(summary = "Toggle course visibility", description = "Hide or Unhide a course from the public view")
+    public ResponseEntity<CourseResponse> toggleVisibility(
+            @PathVariable Long courseId,
+            @AuthenticationPrincipal User admin) {
+        return ResponseEntity.ok(adminService.toggleCourseVisibility(courseId, admin));
+    }
 }

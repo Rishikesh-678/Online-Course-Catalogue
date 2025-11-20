@@ -87,6 +87,16 @@ public class CourseService {
     }
 
     /**
+     * Gets a specific course created by the currently logged-in instructor.
+     * Includes courses in any status (APPROVED, HIDDEN, PENDING_REMOVAL, etc.)
+     */
+    public CourseResponse getMyCourse(Long courseId, User instructor) {
+        Course course = findCourseById(courseId);
+        checkOwnership(course, instructor); // Verify this instructor owns this course
+        return CourseResponse.fromEntity(course, getBaseUrl());
+    }
+
+    /**
      * Allows an instructor to update their own course.
      */
     @Transactional
