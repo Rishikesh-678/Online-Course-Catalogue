@@ -93,6 +93,15 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getPendingCourses());
     }
 
+    @GetMapping("/courses/pending/{courseId}")
+    @Operation(summary = "Get pending course details", description = "Retrieve full details of a specific pending course")
+    @ApiResponse(responseCode = "200", description = "Pending course details", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class)))
+    @ApiResponse(responseCode = "404", description = "Course not found", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class)))
+    @ApiResponse(responseCode = "403", description = "Forbidden - Admin role required", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class)))
+    public ResponseEntity<PendingCourseDto> getPendingCourseById(@PathVariable Long courseId) {
+        return ResponseEntity.ok(adminService.getPendingCourseById(courseId));
+    }
+
     @PostMapping("/courses/approve/{courseId}")
     @Operation(summary = "Approve a pending course", description = "Approve and publish a pending course")
     @ApiResponse(responseCode = "200", description = "Course approved successfully", content = @Content(schema = @Schema(implementation = com.edugate.edugateapi.dto.ApiResponse.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\"success\":true,\"status\":200,\"timestamp\":\"2025-11-12T16:00:00Z\",\"path\":\"/api/admin/courses/approve/5\",\"message\":\"Course approved successfully\",\"data\":null}")))

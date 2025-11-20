@@ -75,9 +75,16 @@ public class AdminService {
                 CourseStatus.PENDING_ADDITION, 
                 CourseStatus.PENDING_REMOVAL
         );
+        String baseUrl = getBaseUrl();
         return courseRepository.findByStatusIn(pendingStatuses).stream()
-                .map(PendingCourseDto::fromEntity)
+                .map(course -> PendingCourseDto.fromEntity(course, baseUrl))
                 .collect(Collectors.toList());
+    }
+
+    public PendingCourseDto getPendingCourseById(Long courseId) {
+        Course course = findCourseById(courseId);
+        String baseUrl = getBaseUrl();
+        return PendingCourseDto.fromEntity(course, baseUrl);
     }
     
     @Transactional
@@ -144,5 +151,9 @@ public class AdminService {
         return courseRepository.findById(courseId)
                  // v-- CHANGED --v
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
+    }
+
+    private String getBaseUrl() {
+        return System.getProperty("app.base-url", "http://localhost:8080");
     }
 }

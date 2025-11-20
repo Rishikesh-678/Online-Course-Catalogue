@@ -37,7 +37,21 @@ public class PendingCourseDto {
     @Schema(description = "When the course was created/submitted")
     private Instant createdAt;
 
-    public static PendingCourseDto fromEntity(Course course) {
+    @Schema(description = "Course category", example = "Backend Development")
+    private String category;
+
+    @Schema(description = "Video link (YouTube URL)", example = "https://youtube.com/watch?v=abc123")
+    private String videoLink;
+
+    @Schema(description = "Public URL to the thumbnail image", example = "http://localhost:8080/api/images/3d2fd838-...avif")
+    private String thumbnailUrl;
+
+    public static PendingCourseDto fromEntity(Course course, String baseUrl) {
+        String thumbnailUrl = null;
+        if (course.getThumbnail() != null && !course.getThumbnail().isEmpty()) {
+            thumbnailUrl = baseUrl + "/api/images/" + course.getThumbnail();
+        }
+
         return PendingCourseDto.builder()
                 .id(course.getId())
                 .courseName(course.getCourseName())
@@ -46,6 +60,9 @@ public class PendingCourseDto {
                 .creatorId(course.getCreatedBy().getId())
                 .status(course.getStatus())
                 .createdAt(course.getCreatedAt())
+                .category(course.getCategory())
+                .videoLink(course.getVideoLink())
+                .thumbnailUrl(thumbnailUrl)
                 .build();
     }
 }
